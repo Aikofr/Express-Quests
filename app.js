@@ -19,6 +19,7 @@ app.get("/api/users/:id", movieHandlers.getUsersById);
 app.post("/api/users", movieHandlers.postUsers);
 
 app.put("/api/users/:id", movieHandlers.updateUsers);
+app.delete("/api/users/:id", movieHandlers.deleteUsers);
 
 app.listen(port, (err) => {
   if (err) {
