@@ -15,12 +15,13 @@ app.get("/", welcome);
 const movieHandlers = require("./movieHandlers");
 const { validateUser } = require("./validateUser.js");
 const { validateMovie } = require("./validateMovie.js");
+const { hashPassword } = require("./auth.js");
 
 app.get("/api/users", movieHandlers.getUsers);
 app.get("/api/users/:id", movieHandlers.getUsersById);
-app.post("/api/users", validateUser, movieHandlers.postUsers);
 
-app.put("/api/users/:id", validateUser, movieHandlers.updateUsers);
+app.post("/api/users", validateUser, hashPassword, movieHandlers.postUsers);
+app.put("/api/users/:id", validateUser, hashPassword, movieHandlers.updateUsers);
 app.delete("/api/users/:id", movieHandlers.deleteUsers);
 
 app.post("/api/movies", validateMovie, movieHandlers.postUsers);
