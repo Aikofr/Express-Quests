@@ -28,6 +28,26 @@ const getUsers = (req, res) => {
     });
   }
 
+  const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+    const { email } = req.body;
+
+    database
+      .query("select * from users where email = ?", [email])
+      .then(([users]) => {
+        if (users[0] != null) {
+          req.user = users[0];
+
+          next();
+        } else {
+          res.sendStatus(401);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error retrieving data from database");
+      });
+  };
+
   const postUsers = (req, res) => {
     const { firstname, lastname, email, city, language, hashedPassword} = req.body;
   
@@ -38,6 +58,35 @@ const getUsers = (req, res) => {
       )
       .then(([result]) => {
         res.location(`/api/users/${result.insertId}`).sendStatus(201);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error saving the users");
+      });
+  };
+
+  const getMovies = (req, res) => {
+    database
+      .query("SELECT * FROM movies")
+      .then(([movies]) => {
+        res.json(movies);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error retrieving data from database");
+      });
+    }
+
+  const postMovie = (req, res) => {
+    const { title, director, year, color, duration } = req.body;
+
+    database
+      .query(
+        "INSERT INTO movies(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+        [title, director, year, color, duration]
+      )
+      .then(([result]) => {
+        res.location(`/api/movies/${result.insertId}`).sendStatus(201);
       })
       .catch((err) => {
         console.error(err);
@@ -107,6 +156,9 @@ module.exports = {
   getUsers,
   getUsersById,
   postUsers,
+  postMovie,
   updateUsers,
   deleteUsers,
+  getUserByEmailWithPasswordAndPassToNext,
+  getMovies,
 };
